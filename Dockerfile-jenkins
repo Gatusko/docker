@@ -1,0 +1,9 @@
+FROM jenkins/jenkins:lts
+# Instalamos nuestros plugins necesarios para hacer un Build en Docker
+RUN jenkins-plugin-cli --plugins \
+    docker-plugin \
+    docker-workflow \
+    docker-build-publish \
+    docker-build-step \
+    docker-compose-build-step \
+    github-branch-source:1.8

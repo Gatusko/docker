@@ -1,0 +1,12 @@
+services:
+  jenkins:
+    # Usando el ultimo Jenkins
+    image: mijenkins:1.0.0
+    ports:
+      - 8080:8080
+    # Definimos nuestro volumen
+    volumes:
+      - jenkins-volume:/var/jenkins-home
+
+volumes:
+  jenkins-volume:

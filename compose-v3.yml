@@ -1,0 +1,36 @@
+# nombre que definimos la aplicacion
+# al no tener esto toma por defecto el nombre
+# de la carpeta
+name: myAplicacion
+# Definimos nuestros servicios
+services:
+  # Definimos el nombre del servicio
+  my-service:
+    # La Imagen que va a usar
+    image: test:4.0.0
+    # El puerto
+    ports:
+      - 8080:8080
+    networks:
+      - myNetwork
+    mem_limit: 50m
+    cpus: '0.5'
+    deploy:
+      resources:
+        limits:
+          # 50 megas de memoria
+          memory: 50m
+          # 500 millicores es decir la mitad de
+          # un core
+          cpus: '0.5'
+
+
+# Definimos nuestro propio network
+# en ves de usar el default 172.x.x.x
+# usamos el 10.X.X.X network
+networks:
+  myNetwork:
+        driver: bridge
+        ipam:
+          config:
+            - subnet: 10.0.0.0/24

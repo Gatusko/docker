@@ -1,0 +1,13 @@
+# Definimos nuestros servicios
+services:
+  # Definimos el nombre del servicio
+  my-service:
+    # La Imagen que va a usar
+    image: test:volume-on-compose
+    # El puerto
+    ports:
+      - 8080:8080
+    # Volume on Bind 
+    volumes:
+      - /home/mike/personal/docker/test:/data
+

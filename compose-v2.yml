@@ -1,0 +1,9 @@
+# Definimos nuestros servicios
+services:
+  # Definimos el nombre del servicio
+  my-service:
+    # La Imagen que va a usar
+    image: test:2.0.0
+    # El puerto
+    ports:
+      - 8080:8080

@@ -1,0 +1,38 @@
+## Toda imagen tiene que iniciar de otra imagen
+FROM golang:1.24-bookworm AS build
+
+# Donde vamos a trabajar!
+WORKDIR /build
+
+# Si tenemos librerias usamos el go.mod
+#COPY go.mod go.sum ./
+
+## Esto siginifca COPY <DEST> <SOURCE> Y nuestro source por defecto es
+## nuestro WORKDIR
+COPY . .
+
+## Ejecutamos nuestros comandos
+RUN echo "test"
+
+## Siempre tener las librerias
+RUN go mod download
+
+## Hacer build para debian
+RUN go build -o main .
+
+# Imagen debian para poder instalar otras cosas
+FROM  debian:bookworm-slim
+
+WORKDIR /build
+COPY --from=build /build/main ./main
+
+
+# Instalamos lo necesario
+RUN  apt-get update -y && apt-get install -y iputils-ping && apt-get install -y htop
+
+# Solo puede existir un CMD y puede ser overwrite
+CMD ["HOLA GOPHERS"]
+
+# solo puedo existir un entrypoint no puede ser overwrite
+# sin ser especificado
+ENTRYPOINT ["./main"]
