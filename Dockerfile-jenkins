@@ -6,4 +6,5 @@ RUN jenkins-plugin-cli --plugins \
     docker-build-publish \
     docker-build-step \
     docker-compose-build-step \
-    github-branch-source:1.8
+    github-branch-source:1.8 \
+    git-parameter:444.vca_b_84d3703c2

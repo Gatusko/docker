@@ -575,6 +575,10 @@ sudo gpasswd -a mike migrupo
 Jenkins es una de las herramientas mas usadas para CI/CD esto nos ayuda para hacer nuestros 
 builds mas facil y demas.
 
+
+Vamos a crear nuestra propia imagen de Jenkins con los plugins necesarios 
+
+
 ```bash
 docker image build -f Dockerfile-jenkins .
 ```
@@ -583,4 +587,30 @@ Source de los plugins de Jenkins:
 
 https://updates.jenkins.io/latest/
 
+Y hacemos correr nuestro Jenkisn 
 
+```bash 
+docker compose -f compose-jenkins.yml up
+```
+
+### Pasos para integrar Docker-Jenkins-Github
+
+
+Configuramos para que podamos acceder a nuestro github podemos aniadir los
+host como ignorarlos en este escenario vamos a ignorarlos
+:
+
+![img_3.png](images/img_3.png)
+
+Creamos nuestro primer pipeline 
+
+![img.png](images/img.png)
+
+Una ves creado nuestro primer pipeline vamos a seleccionar nuestra rama para 
+poder hacer el build
+![img_1.png](images/img_1.png)
+
+
+Seleccionamos y aniadimos nuestras credenciales:
+
+![img_4.png](images/img_4.png)
