@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    dockerImage = docker.build("miApp:${env.BUILD_NUMBER}")
+                    dockerImage = docker.build("test:${env.BUILD_NUMBER}")
                 }
             }
         }
