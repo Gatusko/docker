@@ -4,15 +4,12 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                script {
+                    dockerImage = docker.build("miApp:${env.BUILD_NUMBER}")
+                }
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
+        stage('push to registry') {
             steps {
                 echo 'Deploying....'
             }
