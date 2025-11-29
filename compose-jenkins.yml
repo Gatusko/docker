@@ -4,9 +4,21 @@ services:
     image: mijenkins:1.0.0
     ports:
       - 8080:8080
+      - 50000:50000
     # Definimos nuestro volumen
     volumes:
       - jenkins-volume:/var/jenkins-home
+      - /var/run/docker.sock:/var/run/docker.sock
+    group_add:
+  ## Necesitamos aniadir nuestro grupo de docker a nuestro Usuario de Jenkins
+  ## stat -c '%g' /var/run/docker.sock
+      - 989
+
+# Vamos a usar el registry para hacer un store a nuestras imagenes
+  registry:
+    image: registry:latest
+    ports:
+      - 5000:5000
 
 volumes:
   jenkins-volume:

@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('Build') {
             steps {
@@ -11,7 +10,11 @@ pipeline {
         }
         stage('push to registry') {
             steps {
-                echo 'Deploying....'
+                script{
+                    docker.withRegistry('http://registry:5000',''){
+                        dockerImage.push()
+                    }
+                }
             }
         }
     }
