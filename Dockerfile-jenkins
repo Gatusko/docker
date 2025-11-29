@@ -11,6 +11,7 @@ RUN apt-get update && \
     apt-get install -y docker-ce-cli && \
     apt-get clean
 
+
 # Usamos de nuevo el usuario Jenkins
 USER jenkins
 # Instalamos nuestros plugins necesarios para hacer un Build en Docker

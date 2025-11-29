@@ -5,7 +5,10 @@ services:
     ports:
       - 8080:8080
       - 50000:50000
-    # Definimos nuestro volumen
+    environment:
+     # Aniadimos el registry:5000 como inseguro
+      - DOCKER_OPTS=--insecure-registry registry:5000
+      # Definimos nuestro volumen
     volumes:
       - jenkins-volume:/var/jenkins-home
       - /var/run/docker.sock:/var/run/docker.sock
