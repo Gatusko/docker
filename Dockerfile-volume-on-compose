@@ -36,6 +36,9 @@ CMD ["HOLA GOPHERS"]
 # Creamos un directorio que no va a ser anonimo
 RUN mkdir "/data"
 
+
+RUN  touch "/data/miarchivo.txt"
+
 # solo puedo existir un entrypoint no puede ser overwrite
 # sin ser especificado
 ENTRYPOINT ["./main"]

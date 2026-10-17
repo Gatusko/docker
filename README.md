@@ -281,7 +281,7 @@ En RESUMEN *crea y corre* un nuevo contenedor con los valores asignados.
 Vamos por ejemplo 
 
 ```bash
-docker container run --name test -p 8080:8080 test:5.0.0
+docker container run --name test -p 8080:8080 test:1.0.0
 ```
 
 Al correr este comando veremos que tenemos nuestro contenedor corriendo
@@ -528,7 +528,7 @@ docker image build --tag test:volume-with-user -f Dockerfile-volume-with-user .
 Y hacemos correr
 
 ```bash
-
+docker compose -f compose-volume-rootless.yml up
 ```
 
 Dentro de aca veremos muchos problemas que causa el dolor de cabeza
@@ -550,6 +550,12 @@ tener permiso. El problema aca es que en *LINUX* solo un grupo puede
 ser el duenio de la carpeta. Claro se puede aniadir permisos y demas
 a otros grupos sin embargo eso es complicarse. 
 
+O dar permisos a ese directorio:
+
+```bash 
+sudo chown -R 1001:1001 /home/mike/personal/docker/rootles
+```
+
 La solucion? 
 
 Un usuario para docker, un grupo para docker. 
@@ -564,6 +570,16 @@ sudo adduser -uid 1001 --disabled-password --gecos "" --ingroup migrupo miusuari
 
 Con esto tendremos el usuario y el grupo. Pero si no queremos el usuario
 entonces tenemos que aniadir al usuario del host al grupo de 1001 
+
+En aca veremos en el caso de que creamos el mismo compose
+
+```bash
+docker image build --tag test:volume-with-user -f Dockerfile-volume-with-same-user .
+```
+
+```bash
+docker compose -f compose-with-same-user.yml up
+```
 
 ```bash
 sudo gpasswd -a mike migrupo
@@ -614,3 +630,114 @@ poder hacer el build
 Seleccionamos y aniadimos nuestras credenciales:
 
 ![img_4.png](images/img_4.png)
+
+Esto hace que jale de nuestro repositorio un Jenkinsfile y poder ejecutarlo
+manualmente. Basado en esa imagen.
+
+Una ves hecho tenemos que aniadir nuestro localhost:5000 a insecure registry ya 
+que jenkins usa el socket daemon del docker del host para poder hacer todo este
+bussiness logic y esa es la razon por que exponemos el puerto 5000 del mismo.
+
+En el host:
+
+```bash
+sudo vi daemon.json
+
+y con este contenido le decimos que no vaya por https sino por http  
+{"insecure-registries": ["localhost:5000"]}
+```
+
+Con todo configurado va a crear una nueva imagen y pushear a nuestro repositorio vasado
+en nuestro pipeline 
+
+
+```jenkins
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    dockerImage = docker.build("test:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+        stage('push to registry') {
+            steps {
+                script{
+                    docker.withRegistry('http://localhost:5000',''){
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Vemos dos pasos crear una imagen con tag con el build number y despues 
+pusheamos a nuestro registry
+
+## Deploy a un Servidor
+
+Para hacer deploy a un seridor remoto tendremos que primero 
+instalar dentro del mismo servidor remoto un servidor ssh:
+
+```bash
+sudo apt install openssh-server -y
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
+
+Habilitar puerto 22 ssh si es necesario y si usas firewall.
+```bash
+sudo ufw allow ssh
+sudo ufw reload
+```
+
+Aqui hay muchos pasos y dentro del contenedor vamos a poder 
+ya acceder hacer correr los comandos necesarios:
+
+
+Dentro del contenedor de Jenkins
+```bash
+ssh mike@172.17.0.1
+```
+
+Nos pedira un password pero tambien podemos usar una llave ssh
+
+
+Generemos una llave ssh en la maquina va a ser deploy:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "jenkins-deploy"
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+```
+
+Una ves con esa en nuestro Jenkins lo podemos insertar de la misma 
+manera que hicimos con github 
+
+![img_6.png](images/img_6.png)
+
+Una ves en credenciales globales
+
+![img_7.png](images/img_7.png)
+
+Y creamos uno con ssh: 
+
+![img_8.png](images/img_8.png)
+
+Aniadimos nuestra llave ssh y 
+
+Con esto ya no vamos a necesitar que poner el password.
+
+### Configuracion de la Pipeline 
+
+Como la forma anterior creamos un pipeline y esta ves vamos a selecionar 
+la imagen que queramos deployar.
+
+
+![img_9.png](images/img_9.png)
+
+Con esto tendremos todo los tags necesarios.
+

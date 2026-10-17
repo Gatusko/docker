@@ -36,6 +36,8 @@ CMD ["HOLA GOPHERS"]
 # Creamos un directorio que no va a ser anonimo
 RUN mkdir "/data"
 
+RUN  touch "/data/miarchivo.txt"
+
 # CREAMOS UN VOLUMEN Y ESTE VOLUMEN va a ser anonimo
 VOLUME ["/data"]
 
